@@ -1,0 +1,699 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>PROJECT 1: AWS IAM, Identity Center, and Organization Setup</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(128, 125, 120, 1);
+	fill: rgba(128, 125, 120, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(204, 121, 47, 1);
+	fill: rgba(204, 121, 47, 1);
+}
+.highlight-yellow {
+	color: rgba(195, 148, 67, 1);
+	fill: rgba(195, 148, 67, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(63, 126, 190, 1);
+	fill: rgba(63, 126, 190, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(179, 84, 136, 1);
+	fill: rgba(179, 84, 136, 1);
+}
+.highlight-red {
+	color: rgba(201, 85, 73, 1);
+	fill: rgba(201, 85, 73, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 111, 200, 0.09);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(128, 125, 120, 1);
+	fill: rgba(128, 125, 120, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(204, 121, 47, 1);
+	fill: rgba(204, 121, 47, 1);
+}
+.block-color-yellow {
+	color: rgba(195, 148, 67, 1);
+	fill: rgba(195, 148, 67, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(63, 126, 190, 1);
+	fill: rgba(63, 126, 190, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(179, 84, 136, 1);
+	fill: rgba(179, 84, 136, 1);
+}
+.block-color-red {
+	color: rgba(201, 85, 73, 1);
+	fill: rgba(201, 85, 73, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(232, 242, 250, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 99, 174, 0.172); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="22c4b564-b2dd-8062-94f1-d4b1ce54082f" class="page sans"><header><h1 class="page-title"><strong>PROJECT 1: AWS IAM, Identity Center, and Organization Setup</strong></h1><p class="page-description"></p></header><div class="page-body"><hr id="22d4b564-b2dd-80b6-a78c-c4f5cd0cd8a1"/><h2 id="22d4b564-b2dd-8019-82a2-c0763f1c74b3" class=""><strong>Project Objective</strong></h2><ul id="22d4b564-b2dd-8094-858a-e33649909257" class="bulleted-list"><li style="list-style-type:disc">Create and configure an AWS Organization with 3 member accounts</li></ul><ul id="22d4b564-b2dd-809d-833e-fcd8f501a114" class="bulleted-list"><li style="list-style-type:disc">Set up AWS IAM Identity Center with 5 users</li></ul><ul id="22d4b564-b2dd-8054-b532-e55cb7097e0e" class="bulleted-list"><li style="list-style-type:disc">Group users by roles (Admin, DevOps, Developers)</li></ul><ul id="22d4b564-b2dd-80ae-8289-ca2a4ed312ec" class="bulleted-list"><li style="list-style-type:disc">Create and attach IAM policies to manage permissions</li></ul><p id="22d4b564-b2dd-804d-8121-f440d854d1ca" class="">
+</p><h2 id="22d4b564-b2dd-80df-8164-c0a747a4dfb7" class=""><strong>Step-by-Step Implementation</strong></h2><hr id="22d4b564-b2dd-8022-bd87-c7c14a7b449c"/><h3 id="22d4b564-b2dd-8068-a8d7-c7ee97555f7b" class=""><strong>Step 1: Create a Management Account</strong></h3><ul id="22d4b564-b2dd-80ad-8c5a-cebf921ca15d" class="bulleted-list"><li style="list-style-type:disc">Created a root/management account which serves as the primary AWS account for managing the organization.</li></ul><hr id="22d4b564-b2dd-8038-a509-e8d8ea1d76e0"/><h3 id="22d4b564-b2dd-8034-9f61-f9971aadc2cf" class=""><strong>Step 2: Sign In as Root User</strong></h3><ul id="22d4b564-b2dd-80e2-82b3-d62be0f46f7f" class="bulleted-list"><li style="list-style-type:disc">Signed in to the AWS Management Console using the root credentials of the management account.</li></ul><ul id="22d4b564-b2dd-805c-9a9b-e7f11b70a268" class="bulleted-list"><li style="list-style-type:disc">This account now acts as the AWS Organization’s root.</li></ul><hr id="22d4b564-b2dd-80f2-b7b9-cb974c99efc3"/><h3 id="22d4b564-b2dd-80c1-8400-fb70baa2af2a" class=""><strong>Step 3: Create Member Accounts</strong></h3><ul id="22d4b564-b2dd-8096-bc70-dbba5d31e5ca" class="bulleted-list"><li style="list-style-type:disc">Intended to create 3 member accounts under the organization structure.</li></ul><ul id="22d4b564-b2dd-8055-80ea-db9342f123b4" class="bulleted-list"><li style="list-style-type:disc"><strong>Note:</strong> AWS Free Tier does not support creating multiple linked accounts. Therefore, only the management account was used to proceed with the next configurations. All users were added to this account.</li></ul><hr id="22d4b564-b2dd-806c-a692-cb425dbf2972"/><h3 id="22d4b564-b2dd-8021-8ad7-f8c721357e43" class=""><strong>Step 4: Create Users in IAM Identity Center</strong></h3><p id="22d4b564-b2dd-80a0-a4ad-e2ed4308e6e2" class=""><strong>Steps Taken:</strong></p><ol type="1" id="22d4b564-b2dd-805d-be11-f656ad3cb51f" class="numbered-list" start="1"><li>Navigate to <strong>IAM Identity Center</strong></li></ol><ol type="1" id="22d4b564-b2dd-80a6-8d01-ea421a2e4e37" class="numbered-list" start="2"><li>Go to <strong>Users &gt; Add User</strong></li></ol><ol type="1" id="22d4b564-b2dd-8051-91ee-e47c8e12a71f" class="numbered-list" start="3"><li>Created the following 5 users:</li></ol><table id="22d4b564-b2dd-8030-a92d-edde5354edd7" class="simple-table"><tbody><tr id="22d4b564-b2dd-802e-8324-dbd99f3de3fb"><td id="@YAo" class="">Username</td><td id="t?pA" class="">Name</td></tr><tr id="22d4b564-b2dd-8002-8025-dbf26e8f697c"><td id="@YAo" class="">Wilson_Anderson</td><td id="t?pA" class="">Wilson Anderson</td></tr><tr id="22d4b564-b2dd-802e-819a-c66fca0320df"><td id="@YAo" class="">Uchenna</td><td id="t?pA" class="">Kelvin Uchenna</td></tr><tr id="22d4b564-b2dd-8031-bedd-d63f56f8390c"><td id="@YAo" class="">Kenneth</td><td id="t?pA" class="">Kenneth Chibuzo</td></tr><tr id="22d4b564-b2dd-80f7-b58b-fdc9664b6f2d"><td id="@YAo" class="">flynncharles</td><td id="t?pA" class="">Flynn Charles</td></tr><tr id="22d4b564-b2dd-8038-aeb4-f23eb39ee46f"><td id="@YAo" class="">Harris</td><td id="t?pA" class="">Harris Anderson</td></tr></tbody></table><figure id="22d4b564-b2dd-8013-80f2-f7378c9d7c27" class="image"><a href="image.png"><img style="width:709.984375px" src="image.png"/></a></figure><figure id="22e4b564-b2dd-8078-a54e-ef0a26373e9e" class="image"><a href="image%201.png"><img style="width:709.984375px" src="image%201.png"/></a></figure><h3 id="22d4b564-b2dd-80ad-93e8-effc0fb1c1a4" class=""><strong>Step 5: Enable Multi-Factor Authentication (MFA)</strong></h3><p id="22e4b564-b2dd-8000-bdbe-f77e129688c0" class=""><strong>Steps Taken:</strong></p><ol type="1" id="22d4b564-b2dd-807e-bbaa-d2425f5f018e" class="numbered-list" start="1"><li>Go to <strong>IAM Identity Center &gt; Settings &gt; MFA</strong></li></ol><ol type="1" id="22d4b564-b2dd-8012-896b-db11781c73ec" class="numbered-list" start="2"><li>Enabled the setting: <strong>“Require MFA for all users”</strong></li></ol><ol type="1" id="22d4b564-b2dd-8059-8407-c4da95e97a30" class="numbered-list" start="3"><li>Each user is required to set up MFA during first-time login using Google Authenticator or a similar app.</li></ol><hr id="22d4b564-b2dd-8013-80bc-daaca7d4ad49"/><h3 id="22d4b564-b2dd-80f7-9ceb-c66e2f663910" class=""><strong>Step 6: Create IAM Groups in Identity Center</strong></h3><p id="22d4b564-b2dd-8034-8d45-db9fb3e47e85" class=""><strong>Steps Taken:</strong></p><ol type="1" id="22d4b564-b2dd-8080-a85d-c06f07af7913" class="numbered-list" start="1"><li>Navigate to <strong>Groups &gt; Create Group</strong></li></ol><ol type="1" id="22d4b564-b2dd-80f7-ba1a-f9e695d9da22" class="numbered-list" start="2"><li>Created the following groups:<ul id="22d4b564-b2dd-80fd-885a-dddaec38be31" class="bulleted-list"><li style="list-style-type:disc"><strong>Admin-Team</strong></li></ul><ul id="22d4b564-b2dd-8089-8b75-f83847557a80" class="bulleted-list"><li style="list-style-type:disc"><strong>DevOps-Team</strong></li></ul><ul id="22d4b564-b2dd-8050-bf91-d4e14b3d36b1" class="bulleted-list"><li style="list-style-type:disc"><strong>Developer-Team</strong></li></ul><h3 id="22d4b564-b2dd-8085-bece-f853067d3409" class=""><strong>Step 7: Assign Users to Groups</strong></h3><p id="22d4b564-b2dd-80e5-80c9-eeab6cf73a80" class=""><strong>Group Membership:</strong></p><table id="22d4b564-b2dd-80f2-85ce-d0314e6a6356" class="simple-table"><tbody><tr id="22d4b564-b2dd-8023-9583-dd19984489d6"><td id="tL{w" class="">Group </td><td id="s`ci" class="">Assigned Users</td></tr><tr id="22d4b564-b2dd-8042-89ee-f355c205b825"><td id="tL{w" class="">Admin-Team </td><td id="s`ci" class="">Wilson Anderson</td></tr><tr id="22d4b564-b2dd-8008-925e-ebce13329460"><td id="tL{w" class="">DevOps-Team</td><td id="s`ci" class="">user1, user2</td></tr><tr id="22d4b564-b2dd-8081-af03-e91f5c80ddf4"><td id="tL{w" class="">Developer-Team</td><td id="s`ci" class="">user3, user3</td></tr></tbody></table></li></ol><p id="22d4b564-b2dd-80ef-9a4a-e4e7680006d4" class=""><strong>Screenshots:</strong></p><ul id="22d4b564-b2dd-80a2-821d-fdf05a458374" class="bulleted-list"><li style="list-style-type:disc">Admin team assignment</li></ul><ul id="22d4b564-b2dd-806e-8c93-c497ae928811" class="bulleted-list"><li style="list-style-type:disc">Developer team assignment</li></ul><ul id="22d4b564-b2dd-8037-a327-f92a2e3a8a4b" class="bulleted-list"><li style="list-style-type:disc">DevOps team assignment</li></ul><ul id="22d4b564-b2dd-80d5-8f1f-e699b4750283" class="bulleted-list"><li style="list-style-type:disc">User groups overview<br/></li></ul><figure id="22d4b564-b2dd-805f-93f3-fb66b758fb77" class="image"><a href="image%202.png"><img style="width:710px" src="image%202.png"/></a></figure><figure id="22d4b564-b2dd-80bf-a2a4-e268518b715c" class="image"><a href="image%203.png"><img style="width:710px" src="image%203.png"/></a></figure><figure id="22d4b564-b2dd-80e9-8af7-f440290aca8b" class="image"><a href="image%204.png"><img style="width:710px" src="image%204.png"/></a></figure><figure id="22d4b564-b2dd-8091-9db1-f2e3fcd6717e" class="image"><a href="image%205.png"><img style="width:710px" src="image%205.png"/></a></figure><h3 id="22d4b564-b2dd-80b5-b1c4-da54ca016a8b" class=""><strong>Step 8: Create Permission Sets</strong></h3><p id="22d4b564-b2dd-80dd-bd8f-ca26b7236c89" class=""><strong>Steps Taken:</strong></p><ol type="1" id="22d4b564-b2dd-8034-b68c-fc755c0ab196" class="numbered-list" start="1"><li>Go to <strong>IAM Identity Center &gt; Permission Sets &gt; Create Permission Set</strong></li></ol><ol type="1" id="22d4b564-b2dd-80b3-8d8e-ecb5226f14d9" class="numbered-list" start="2"><li>Created the following permission sets:</li></ol><table id="22d4b564-b2dd-800b-a29f-e1427dcd5d45" class="simple-table"><tbody><tr id="22d4b564-b2dd-804f-8a0a-e1198b934e6d"><td id="_L?Z" class="">Permission Set Name</td><td id="dcRd" class="">Access Level</td></tr><tr id="22d4b564-b2dd-8032-bfd2-dff3ae68a90b"><td id="_L?Z" class="">Admin-permission</td><td id="dcRd" class="">Administrator Access</td></tr><tr id="22d4b564-b2dd-8003-9ee2-f7ed4474d7b0"><td id="_L?Z" class="">PowerUser-permission</td><td id="dcRd" class="">PowerUser Access</td></tr><tr id="22d4b564-b2dd-80fe-87c4-c4edc5798bc2"><td id="_L?Z" class="">SystemAdmin-permission</td><td id="dcRd" class="">Custom System Admin Role</td></tr><tr id="22d4b564-b2dd-80fb-b30d-dc6fac71a0ed"><td id="_L?Z" class="">DataScientist-permission</td><td id="dcRd" class="">Read/Write (custom)</td></tr></tbody></table><h3 id="22d4b564-b2dd-805f-8473-ef66a0b7acda" class=""><strong>Step 9: Assign Permissions to Groups</strong></h3><p id="22d4b564-b2dd-8072-8265-c86c67160f8d" class=""><strong>Assignment Mapping:</strong></p><table id="22d4b564-b2dd-802f-b6eb-e7bb87dc99f5" class="simple-table"><tbody><tr id="22d4b564-b2dd-8071-98a8-cb543f5230ad"><td id="VIZD" class="">Group Name</td><td id="tLj\" class="">Assigned Permission</td></tr><tr id="22d4b564-b2dd-8038-898d-f9b006f19822"><td id="VIZD" class="">Admin-Team</td><td id="tLj\" class="">Admin-permission</td></tr><tr id="22d4b564-b2dd-804d-9c63-f9dbf6dc222e"><td id="VIZD" class="">DevOPS-Team</td><td id="tLj\" class="">PowerUser-permission, SystemAdmin-permission</td></tr><tr id="22d4b564-b2dd-80fe-8f3b-ed5c53b9929f"><td id="VIZD" class="">Developer-Team</td><td id="tLj\" class="">DataScientist-permission</td></tr></tbody></table><p id="22d4b564-b2dd-8006-a877-f21fd3e3c748" class=""><strong>Steps Taken:</strong></p><ol type="1" id="22d4b564-b2dd-802a-94e7-c38fb09a6135" class="numbered-list" start="1"><li>Go to <strong>IAM Identity Center &gt; Assignments</strong></li></ol><ol type="1" id="22d4b564-b2dd-80a9-b19c-cb95f4560bbc" class="numbered-list" start="2"><li>Assigned each group to <strong>All Accounts</strong> (Dev, Staging, Production – though only one was active)</li></ol><ol type="1" id="22d4b564-b2dd-80e2-b112-f5e555c99bca" class="numbered-list" start="3"><li>Verified permission mapping via the IAM Identity Center dashboard</li></ol><p id="22d4b564-b2dd-808c-b492-e7149d81cde9" class=""><strong>Screenshot:</strong></p><ul id="22d4b564-b2dd-803f-b648-f998a4476076" class="bulleted-list"><li style="list-style-type:disc">Permission set assignments for each group</li></ul><figure id="22d4b564-b2dd-80e4-a44c-e29accb098d2" class="image"><a href="image%206.png"><img style="width:709.984375px" src="image%206.png"/></a></figure><figure id="22d4b564-b2dd-80bf-a9be-f3e316a29eaf" class="image"><a href="image%207.png"><img style="width:709.984375px" src="image%207.png"/></a></figure><h3 id="22d4b564-b2dd-8039-a212-ec92ce55d994" class=""><strong>Step 10: Account Allocation</strong></h3><p id="22d4b564-b2dd-808d-85bf-ff3153ba3931" class=""><strong>Instruction:</strong></p><p id="22d4b564-b2dd-8028-ba6c-d6d61415fe4c" class="">All users must have <strong>access to all accounts</strong>, with <strong>permissions controlling their actions</strong>.</p><p id="22d4b564-b2dd-80aa-911f-ce91e46a1ac0" class=""><strong>Challenge:</strong></p><p id="22d4b564-b2dd-80cd-8398-ea12fe06c525" class="">Due to Free Tier limitations, we could not create Dev, Staging, and Production accounts separately. All users were added to the <strong>Development (root) account</strong> instead.</p><p id="22d4b564-b2dd-808a-b508-cc40a57b115a" class=""><strong>Assignment Strategy:</strong></p><ul id="22d4b564-b2dd-801f-8b3a-f13effd706af" class="bulleted-list"><li style="list-style-type:disc">Permissions were still assigned as if across multiple accounts</li></ul><ul id="22d4b564-b2dd-80b9-b123-df13e3c6770f" class="bulleted-list"><li style="list-style-type:disc">Ensured access and behavior simulation was as close to intended setup as possible</li></ul><hr id="22d4b564-b2dd-80d5-a871-ecfdcdbe9cab"/><h3 id="22d4b564-b2dd-806a-812d-f35584ce3d73" class=""><strong>Step 11: User Login Testing</strong></h3><p id="22d4b564-b2dd-8059-8338-c92e7eec34da" class=""><strong>Process:</strong></p><ol type="1" id="22d4b564-b2dd-808d-8b62-dba70cf8c3a4" class="numbered-list" start="1"><li>Users visited the <strong>IAM Identity Center SSO portal link</strong></li></ol><ol type="1" id="22d4b564-b2dd-802f-91f3-ddf3adac4858" class="numbered-list" start="2"><li>Logged in individually:<ul id="22d4b564-b2dd-8059-9f84-fddf8d7953f0" class="bulleted-list"><li style="list-style-type:disc">Provided login credentials</li></ul><ul id="22d4b564-b2dd-803e-b8fc-c7f88f76de4a" class="bulleted-list"><li style="list-style-type:disc">Set up new password</li></ul><ul id="22d4b564-b2dd-80bd-a541-ec8c2612e876" class="bulleted-list"><li style="list-style-type:disc">Configured MFA</li></ul><ul id="22d4b564-b2dd-80c8-9024-ee916109b8f2" class="bulleted-list"><li style="list-style-type:disc">Viewed assigned dashboard</li></ul><ol type="1" id="22d4b564-b2dd-80b2-b762-c4e0064e028e" class="numbered-list" start="3"><li>Verified that account-switching (if available) was visible and user roles reflected expected permissions</li></ol><p id="22d4b564-b2dd-8013-98d7-ea4fd40f8a4d" class=""><strong>Required Screenshots:</strong></p><ul id="22d4b564-b2dd-80c5-9b8a-d05d5e5bd886" class="bulleted-list"><li style="list-style-type:disc">User login screen</li></ul><ul id="22d4b564-b2dd-802a-b218-fdd7d356b26a" class="bulleted-list"><li style="list-style-type:disc">MFA prompt</li></ul><ul id="22d4b564-b2dd-8012-9f5c-fd5d87d50de2" class="bulleted-list"><li style="list-style-type:disc">IAM Identity Center dashboard</li></ul><ul id="22d4b564-b2dd-804c-941b-cf7ff4aa97c0" class="bulleted-list"><li style="list-style-type:disc">(Simulated) account switching view</li></ul><p id="22d4b564-b2dd-805d-8b89-d96dd9537c2f" class="">
+</p><p id="22d4b564-b2dd-8031-a56a-e82e1c5fc6f9" class=""><strong>Flowchart Showing the Steps Listed Above</strong></p></li></ol><figure id="22d4b564-b2dd-8000-9a0b-fd7544c904d2" class="image"><a href="image%208.png"><img style="width:709.984375px" src="image%208.png"/></a></figure><p id="23c4b564-b2dd-80ea-964b-da5b2d4f7ae6" class="">
+</p><figure id="23d4b564-b2dd-80d8-9326-edf214acc42b" class="link-to-page"><a href="https://www.notion.so/PROJECT-2-AWS-VPC-Web-Server-Deployment-Project-23d4b564b2dd80d89326edf214acc42b?pvs=21">PROJECT 2: AWS VPC Web Server Deployment Project</a></figure><p id="25c4b564-b2dd-8033-a91d-f70b52424a4d" class="">
+</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
